@@ -2,9 +2,12 @@ Main();
 
 function Main() {
     if (!IsArticle()) {
+        console.log("홈 화면");
+
         return;
     }
 
+    let uniqueId = 0;
     const main = document.querySelector('#main');
     main.style.display = "flex";
 
@@ -16,13 +19,13 @@ function Main() {
     const tocTarget = innerIndex.querySelectorAll('h1, h2, h3, h4, h5, h6');
 
     let content = ""
-    let prevFocusTocElement;
 
     for (const each of tocTarget) {
-        each.id = each.textContent;
+        ++uniqueId;
+        each.id = `origin-${uniqueId}`;
         const content = document.createElement('span');
         content.innerHTML = AddTabIntoText(each.tagName, each.textContent);
-        content.id = `${each.id}-toc`;
+        content.id = `toc-${uniqueId}`;
         content.setAttribute('href', `#${each.id}`);
         content.style.cssText = `
                 color: black;
@@ -30,32 +33,18 @@ function Main() {
             `;
 
         content.addEventListener('mouseover', (e) => {
-            if (prevFocusTocElement) {
-                BlurToc(prevFocusTocElement);
+            for (const tocElement of tocContainer.children) {
+                BlurToc(tocElement);
             }
 
-            prevFocusTocElement = e.target;
-            FocusToc(e.target);
-        });
-
-        content.addEventListener('mouseover', (e) => {
-            if (prevFocusTocElement) {
-                BlurToc(prevFocusTocElement);
-            }
-
-            prevFocusTocElement = e.target;
             FocusToc(e.target);
         });
 
         content.addEventListener('mouseout', (e) => {
-            if (prevFocusTocElement) {
-                BlurToc(prevFocusTocElement);
+            for (const tocElement of tocContainer.children) {
+                BlurToc(tocElement);
             }
-
-            prevFocusTocElement = e.target;
-            BlurToc(e.target);
         });
-
 
         tocContainer.append(content);
         const br = document.createElement('br');
@@ -75,12 +64,12 @@ function Main() {
                 topElement = each;
             }
 
-            const tocId = `#${each.id}-toc`;
+            const tocId = `#toc-${each.id.replace("origin-", "")}`;
             const tocElement = document.querySelector(tocId);
             BlurToc(tocElement);
         }
 
-        const tocId = `#${topElement.id}-toc`;
+        const tocId = `#toc-${topElement.id.replace("origin-", "")}`;
         const tocElement = document.querySelector(tocId);
         FocusToc(tocElement);
     };
@@ -91,7 +80,11 @@ function Main() {
 }
 
 function FocusToc(e) {
-    if ((e?.id.includes('toc')){
+    if (!e) {
+        return;
+    }
+
+    if (!e.id.includes('toc')) {
         return;
     }
 
@@ -99,7 +92,11 @@ function FocusToc(e) {
 }
 
 function BlurToc(e) {
-    if (e?.id.includes('toc')) {
+    if (!e) {
+        return;
+    }
+
+    if (!e.id.includes('toc')) {
         return;
     }
 
