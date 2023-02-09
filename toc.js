@@ -19,7 +19,6 @@ function Main() {
     const tocTarget = innerIndex.querySelectorAll('h1, h2, h3, h4, h5, h6');
 
     let content = ""
-
     for (const each of tocTarget) {
         ++uniqueId;
         each.id = `origin-${uniqueId}`;
@@ -33,7 +32,7 @@ function Main() {
             `;
 
         content.addEventListener('mouseover', (e) => {
-            for (const tocElement of tocContainer.children) {
+            for(const tocElement of tocContainer.children) {
                 BlurToc(tocElement);
             }
 
@@ -41,9 +40,11 @@ function Main() {
         });
 
         content.addEventListener('mouseout', (e) => {
-            for (const tocElement of tocContainer.children) {
+            for(const tocElement of tocContainer.children) {
                 BlurToc(tocElement);
             }
+
+            RefreshToc();
         });
 
         tocContainer.append(content);
@@ -53,7 +54,7 @@ function Main() {
 
     main.append(tocWrapper);
 
-    const RefreshToc = () => {
+    function RefreshToc() {
         let topElement;
         let topY = 99999;
         for (const each of tocTarget) {
@@ -72,7 +73,7 @@ function Main() {
         const tocId = `#toc-${topElement.id.replace("origin-", "")}`;
         const tocElement = document.querySelector(tocId);
         FocusToc(tocElement);
-    };
+    }
 
     document.addEventListener('scroll', (e) => {
         RefreshToc();
@@ -88,7 +89,8 @@ function FocusToc(e) {
         return;
     }
 
-    e.style.fontWeight = "bold";
+    e.style.textShadow = "0 0 .01px black";
+    e.style.backgroundColor = "#eee";
 }
 
 function BlurToc(e) {
@@ -100,8 +102,8 @@ function BlurToc(e) {
         return;
     }
 
-    e.style.fontWeight = "normal";
-    e.style.borderLeft = "";
+    e.style.textShadow = "";
+    e.style.backgroundColor = "";
 }
 
 function CreateTocWrapper() {
