@@ -54,6 +54,22 @@ function Main() {
 
     main.append(tocWrapper);
 
+    const isSmall = window.matchMedia("(max-width: 1000px");
+    isSmall.addListener(ClearToc)
+    ClearToc();
+
+    document.addEventListener('scroll', (e) => {
+        RefreshToc();
+    });
+
+    function ClearToc(isSmall) {
+        if(isSmall.matches) {
+            document.querySelector("#toc-container").style.display = "none";
+        } else {
+            document.querySelector("#toc-container").style.display = "block";
+        }
+    }
+
     function RefreshToc() {
         let topElement;
         let topY = 99999;
@@ -75,94 +91,91 @@ function Main() {
         FocusToc(tocElement);
     }
 
-    document.addEventListener('scroll', (e) => {
-        RefreshToc();
-    });
-}
+    function FocusToc(e) {
+        if (!e) {
+            return;
+        }
 
-function FocusToc(e) {
-    if (!e) {
-        return;
+        if (!e.id.includes('toc')) {
+            return;
+        }
+
+        e.style.textShadow = "0 0 .01px black";
+        e.style.backgroundColor = "#eee";
     }
 
-    if (!e.id.includes('toc')) {
-        return;
+    function BlurToc(e) {
+        if (!e) {
+            return;
+        }
+
+        if (!e.id.includes('toc')) {
+            return;
+        }
+
+        e.style.textShadow = "";
+        e.style.backgroundColor = "";
     }
 
-    e.style.textShadow = "0 0 .01px black";
-    e.style.backgroundColor = "#eee";
-}
+    function CreateTocWrapper() {
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = `
+                border-left: 1px solid #ddd;
+            `;
 
-function BlurToc(e) {
-    if (!e) {
-        return;
+        return wrapper;
     }
 
-    if (!e.id.includes('toc')) {
-        return;
-    }
+    function CreateTocContainer() {
+        const tocContainer = document.createElement('div');
+        tocContainer.id = "toc-container";
+        tocContainer.style.cssText = `
+                min-width: 100px;
+                border-left: 1px solid #ddd;
+                position: sticky;
+                top: 0px;
+                align-self: flex-start;
+            `;
 
-    e.style.textShadow = "";
-    e.style.backgroundColor = "";
-}
-
-function CreateTocWrapper() {
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = `
-            border-left: 1px solid #ddd;
-        `;
-
-    return wrapper;
-}
-
-function CreateTocContainer() {
-    const tocContainer = document.createElement('div');
-    tocContainer.style.cssText = `
-            min-width: 100px;
-            border-left: 1px solid #ddd;
-            position: sticky;
-            top: 0px;
-            align-self: flex-start;
-        `;
-
-    tocContainer.addEventListener('click', (e) => {
-        document.querySelector(e.target.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
+        tocContainer.addEventListener('click', (e) => {
+            document.querySelector(e.target.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
         });
-    });
 
-    return tocContainer;
-}
-
-function IsArticle() {
-    const currentUrl = window.location.href;
-    const parsedUrl = currentUrl.split("/");
-    const ret = parseInt(parsedUrl[parsedUrl.length - 1], 10);
-
-    return typeof ret === 'number' && isFinite(ret);
-}
-
-function AddTabIntoText(tag, text) {
-    let length = 1;
-    compTag = tag.toLowerCase();
-    if (compTag === 'h2') {
-        length = 1;
-    } else if (compTag === 'h3') {
-        length = 2;
-    } else if (compTag === 'h4') {
-        length = 3;
-    } else if (compTag === 'h5') {
-        lenght = 4;
-    } else if (compTag === 'h6') {
-        length = 5;
-    } else {
-        length = 1;
+        return tocContainer;
     }
 
-    let tab = "";
-    for (let i = 0; i < length; i++) {
-        tab += "&emsp;"
+    function IsArticle() {
+        const currentUrl = window.location.href;
+        const parsedUrl = currentUrl.split("/");
+        const ret = parseInt(parsedUrl[parsedUrl.length - 1], 10);
+
+        return typeof ret === 'number' && isFinite(ret);
     }
 
-    return `${tab}${text}`;
+    function AddTabIntoText(tag, text) {
+        let length = 1;
+        compTag = tag.toLowerCase();
+        if (compTag === 'h2') {
+            length = 1;
+        } else if (compTag === 'h3') {
+            length = 2;
+        } else if (compTag === 'h4') {
+            length = 3;
+        } else if (compTag === 'h5') {
+            lenght = 4;
+        } else if (compTag === 'h6') {
+            length = 5;
+        } else {
+            length = 1;
+        }
+
+        let tab = "";
+        for (let i = 0; i < length; i++) {
+            tab += "&emsp;"
+        }
+
+        return `${tab}${text}`;
+    }
 }
