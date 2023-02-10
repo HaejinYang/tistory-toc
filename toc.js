@@ -1,4 +1,6 @@
 Main();
+const isSmall = window.matchMedia("(max-width: 1000px");
+isSmall.addListener(ClearToc);
 
 function Main() {
     if (!IsArticle()) {
@@ -13,6 +15,12 @@ function Main() {
 
     const tocWrapper = CreateTocWrapper();
     const tocContainer = CreateTocContainer();
+    tocContainer.addEventListener('mouseout', (e) => {
+        if (e.target === e.currentTarget) {
+            console.log("out");
+            RefreshToc();
+        }
+    });
     tocWrapper.append(tocContainer);
 
     const innerIndex = document.querySelector('.tt_article_useless_p_margin');
@@ -22,17 +30,20 @@ function Main() {
     for (const each of tocTarget) {
         ++uniqueId;
         each.id = `origin-${uniqueId}`;
-        const content = document.createElement('span');
-        content.innerHTML = AddTabIntoText(each.tagName, each.textContent);
+        const content = document.createElement('p');
+        content.innerHTML = each.textContent;
         content.id = `toc-${uniqueId}`;
         content.setAttribute('href', `#${each.id}`);
+        const tabLength = GetTabLengthByHeadingTag(each.tagName);
         content.style.cssText = `
                 color: black;
                 cursor: pointer;
+                padding-left: ${tabLength}em;
+                margin-top: -1em;
             `;
 
         content.addEventListener('mouseover', (e) => {
-            for(const tocElement of tocContainer.children) {
+            for (const tocElement of tocContainer.children) {
                 BlurToc(tocElement);
             }
 
@@ -40,11 +51,9 @@ function Main() {
         });
 
         content.addEventListener('mouseout', (e) => {
-            for(const tocElement of tocContainer.children) {
+            for (const tocElement of tocContainer.children) {
                 BlurToc(tocElement);
             }
-
-            RefreshToc();
         });
 
         tocContainer.append(content);
@@ -53,22 +62,9 @@ function Main() {
     }
 
     main.append(tocWrapper);
-
-    const isSmall = window.matchMedia("(max-width: 1000px");
-    isSmall.addListener(ClearToc)
-    ClearToc();
-
     document.addEventListener('scroll', (e) => {
         RefreshToc();
     });
-
-    function ClearToc(isSmall) {
-        if(isSmall.matches) {
-            document.querySelector("#toc-container").style.display = "none";
-        } else {
-            document.querySelector("#toc-container").style.display = "block";
-        }
-    }
 
     function RefreshToc() {
         let topElement;
@@ -120,8 +116,8 @@ function Main() {
     function CreateTocWrapper() {
         const wrapper = document.createElement('div');
         wrapper.style.cssText = `
-                border-left: 1px solid #ddd;
-            `;
+            border-left: 1px solid #ddd;
+        `;
 
         return wrapper;
     }
@@ -130,17 +126,22 @@ function Main() {
         const tocContainer = document.createElement('div');
         tocContainer.id = "toc-container";
         tocContainer.style.cssText = `
-                min-width: 100px;
-                border-left: 1px solid #ddd;
-                position: sticky;
-                top: 0px;
-                align-self: flex-start;
-            `;
+            min-width: 100px;
+            max-width: 300px;
+            border-left: 1px solid #ddd;
+            position: sticky;
+            padding-top: 2em;
+            top: 0px;
+            align-self: flex-start;
+        `;
 
         tocContainer.addEventListener('click', (e) => {
-            document.querySelector(e.target.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
+            const target = e.target.getAttribute('href');
+            if (target) {
+                document.querySelector(e.target.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
         });
 
         return tocContainer;
@@ -154,9 +155,9 @@ function Main() {
         return typeof ret === 'number' && isFinite(ret);
     }
 
-    function AddTabIntoText(tag, text) {
+    function GetTabLengthByHeadingTag(tag) {
         let length = 1;
-        compTag = tag.toLowerCase();
+        let compTag = tag.toLowerCase();
         if (compTag === 'h2') {
             length = 1;
         } else if (compTag === 'h3') {
@@ -171,11 +172,14 @@ function Main() {
             length = 1;
         }
 
-        let tab = "";
-        for (let i = 0; i < length; i++) {
-            tab += "&emsp;"
-        }
+        return length;
+    }
+}
 
-        return `${tab}${text}`;
+function ClearToc(isSmall) {
+    if (isSmall.matches) {
+        document.querySelector("#toc-container").style.display = "none";
+    } else {
+        document.querySelector("#toc-container").style.display = "block";
     }
 }
