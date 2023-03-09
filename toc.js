@@ -1,9 +1,19 @@
-const tocConfig = {
+const LetterThemeConfig = {
+    parent: "#main",
+    isCheckHome: true,
+    header: ".tt_article_useless_p_margin",
+    isRightPosition: true,
+};
+
+const PureBlackThemeConfig = {
     parent: "#content",
     isCheckHome: false,
     header: ".tt_article_useless_p_margin.contents_style",
     isRightPosition: false,
-}
+};
+
+const tocConfig = {...PureBlackThemeConfig};
+
 Main();
 const isSmall = window.matchMedia("(max-width: 1000px");
 isSmall.addListener(ClearToc);
