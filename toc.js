@@ -1,3 +1,9 @@
+const tocConfig = {
+    parent: "#content",
+    isCheckHome: false,
+    header: ".tt_article_useless_p_margin.contents_style",
+    isRightPosition: false,
+}
 Main();
 const isSmall = window.matchMedia("(max-width: 1000px");
 isSmall.addListener(ClearToc);
@@ -10,7 +16,7 @@ function Main() {
     }
 
     let uniqueId = 0;
-    const main = document.querySelector('#main');
+    const main = document.querySelector(tocConfig.parent);
     main.style.display = "flex";
 
     const tocWrapper = CreateTocWrapper();
@@ -23,7 +29,7 @@ function Main() {
     });
     tocWrapper.append(tocContainer);
 
-    const innerIndex = document.querySelector('.tt_article_useless_p_margin');
+    const innerIndex = document.querySelector(tocConfig.header);
     const tocTarget = innerIndex.querySelectorAll('h1, h2, h3, h4, h5, h6');
 
     let content = ""
@@ -61,7 +67,11 @@ function Main() {
         tocContainer.append(br);
     }
 
-    main.append(tocWrapper);
+    if (tocConfig.isRightPosition) {
+        main.append(tocWrapper);
+    } else {
+        main.insertAdjacentElement('afterbegin', tocWrapper);
+    }
     document.addEventListener('scroll', (e) => {
         RefreshToc();
     });
@@ -115,9 +125,18 @@ function Main() {
 
     function CreateTocWrapper() {
         const wrapper = document.createElement('div');
-        wrapper.style.cssText = `
+
+        if (tocConfig.isRightPosition) {
+            wrapper.style.cssText = `
             border-left: 1px solid #ddd;
+						margin-left: 10px;
         `;
+        } else {
+            wrapper.style.cssText = `
+            border-right: 1px solid #ddd;
+						margin-right: 10px;
+        `;
+        }
 
         return wrapper;
     }
@@ -125,10 +144,10 @@ function Main() {
     function CreateTocContainer() {
         const tocContainer = document.createElement('div');
         tocContainer.id = "toc-container";
+
         tocContainer.style.cssText = `
-            min-width: 100px;
+            min-width: 150px;
             max-width: 300px;
-            border-left: 1px solid #ddd;
             position: sticky;
             padding-top: 2em;
             top: 0px;
@@ -148,6 +167,10 @@ function Main() {
     }
 
     function IsArticle() {
+        if (!tocConfig.isCheckHome) {
+            return true;
+        }
+
         const currentUrl = window.location.href;
         const parsedUrl = currentUrl.split("/");
         const ret = parseInt(parsedUrl[parsedUrl.length - 1], 10);
