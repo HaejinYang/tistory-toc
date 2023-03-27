@@ -1,0 +1,25 @@
+*,
+*::after, *::before {
+    box-sizing: border-box;
+}
+
+.tt_article_useless_p_margin {
+
+}
+
+.contents_style {
+
+}
+
+#main {
+    display: block;
+    width: 100vw;
+    box-shadow: inset 0px 0px 10px red;
+}
+
+#content {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    box-shadow: inset 0px 0px 10px red;
+}
