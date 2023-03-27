@@ -1,6 +1,6 @@
 const LetterThemeConfig = {
     parent: "#main",
-    isCheckHome: true,
+    isCheckHome: false,
     header: ".tt_article_useless_p_margin",
     isRightPosition: true,
 };
@@ -12,7 +12,7 @@ const PureBlackThemeConfig = {
     isRightPosition: false,
 };
 
-const tocConfig = {...PureBlackThemeConfig};
+const tocConfig = {...LetterThemeConfig};
 
 Main();
 const isSmall = window.matchMedia("(max-width: 1000px");
@@ -31,17 +31,10 @@ function Main() {
 
     const tocWrapper = CreateTocWrapper();
     const tocContainer = CreateTocContainer();
-    tocContainer.addEventListener('mouseout', (e) => {
-        if (e.target === e.currentTarget) {
-            console.log("out");
-            RefreshToc();
-        }
-    });
     tocWrapper.append(tocContainer);
 
     const innerIndex = document.querySelector(tocConfig.header);
     const tocTarget = innerIndex.querySelectorAll('h1, h2, h3, h4, h5, h6');
-
     let content = ""
     for (const each of tocTarget) {
         ++uniqueId;
@@ -58,17 +51,23 @@ function Main() {
                 margin-top: -1em;
             `;
 
+        let prevFocus = null;
         content.addEventListener('mouseover', (e) => {
             for (const tocElement of tocContainer.children) {
                 BlurToc(tocElement);
             }
 
             FocusToc(e.target);
+            prevFocus = e.target;
         });
 
         content.addEventListener('mouseout', (e) => {
             for (const tocElement of tocContainer.children) {
                 BlurToc(tocElement);
+            }
+
+            if (prevFocus) {
+                FocusToc(prevFocus);
             }
         });
 
