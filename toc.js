@@ -12,7 +12,14 @@ const PureBlackThemeConfig = {
     isRightPosition: false,
 };
 
-const tocConfig = {...LetterThemeConfig};
+const BookClubThemConfig = {
+    parent: ".content-wrap",
+    isCheckHome: false,
+    header: ".tt_article_useless_p_margin.contents_style",
+    isRightPosition: false,
+}
+
+const tocConfig = {...BookClubThemConfig};
 
 Main();
 const isSmall = window.matchMedia("(max-width: 1000px");
